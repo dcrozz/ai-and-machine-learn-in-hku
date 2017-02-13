@@ -15,7 +15,10 @@ def shopSmart(orderList, fruitShops):
         fruitShops: List of FruitShops
     """    
     "*** YOUR CODE HERE ***"
-    return None
+    totalcost = []
+    for fruitShop in fruitShops:
+        totalcost.append(sum([x[1]*fruitShop.fruitPrices[x[0]] for x in orderList]))
+    return fruitShops[min(enumerate(totalcost), key=lambda p : p[1])[0]]
     
 def shopArbitrage(orderList, fruitShops):
     """
@@ -26,7 +29,28 @@ def shopArbitrage(orderList, fruitShops):
         maximum profit in amount
     """
     "*** YOUR CODE HERE ***"
-    return None
+    #  max_list = []
+    #  for fruitShop in fruitShops:
+    #      totalcost = 0
+    #      for order in orderList:
+    #          totalcost += order[1] * fruitShop[order[0]]
+    #      max_list.append(totalcost)
+    #  return max_list
+    minPrice = fruitShops[0].fruitPrices.copy()
+    maxPrice = fruitShops[0].fruitPrices.copy()
+    for fruitShop in fruitShops[1:]:
+        fruitPrice = fruitShop.fruitPrices
+        for key,value in fruitPrice.iteritems():
+            if key in minPrice:
+                if fruitPrice[key] < minPrice[key]:
+                    minPrice[key] = fruitPrice[key]
+                if fruitPrice[key] > maxPrice[key]:
+                    maxPrice[key] = fruitPrice[key]
+            else:
+                minPrice[key] = fruitPrice[key]
+                maxPrice[key] = fruitPrice[key]
+    arbitrageList = {x:maxPrice[x]-minPrice[x] for x in minPrice}
+    return sum([x[1]*arbitrageList[x[0]] for x in orderList])
 
 def shopMinimum(orderList, fruitShops):
     """
@@ -37,7 +61,16 @@ def shopMinimum(orderList, fruitShops):
         Minimun cost of buying the fruits in orderList
     """
     "*** YOUR CODE HERE ***"
-    return None
+    minPrice = fruitShops[0].fruitPrices
+    for fruitShop in fruitShops[1:]:
+        fruitPrice = fruitShop.fruitPrices
+        for key,value in fruitPrice.iteritems():
+            if key in minPrice:
+                if fruitPrice[key] < minPrice[key]:
+                    minPrice[key] = fruitPrice[key]
+            else:
+                minPrice[key] = fruitPrice[key]
+    return sum([x[1]*minPrice[x[0]] for x in orderList])
 
 if __name__ == '__main__':
   "This code runs when you invoke the script from the command line"
