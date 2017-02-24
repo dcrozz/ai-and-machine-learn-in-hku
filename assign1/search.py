@@ -73,19 +73,73 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from game import Directions
+    dir_dict = {
+            'n' : Directions.NORTH,
+            'e' : Directions.EAST,
+            'w' : Directions.WEST,
+            's' : Directions.SOUTH
+            }
+    start = problem.getStartState()
+    frontier, explored = util.Stack(), []
+    frontier.push([(start,'start',0)]) # start = (5,5) frontier = [[(5,5),'start',0]]
+    while(1):
+        visiting = frontier.pop()
+        explored.append(visiting[-1][0]) # the explore position
+        if(problem.isGoalState(visiting[-1][0])):
+            print(str(visiting))
+            return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
+        for successor in problem.getSuccessors(visiting[-1][0]):
+            if not successor[0] in explored:
+                frontier.push(visiting + [successor])
 
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from game import Directions
+    dir_dict = {
+            'n' : Directions.NORTH,
+            'e' : Directions.EAST,
+            'w' : Directions.WEST,
+            's' : Directions.SOUTH
+            }
+    start = problem.getStartState()
+    frontier, explored = util.Queue(), []
+    frontier.push([(start,'start',0)]) # start = (5,5) frontier = [[(5,5),'start',0]]
+    while(1):
+        visiting = frontier.pop()
+        explored.append(visiting[-1][0]) # the explore position
+        if(problem.isGoalState(visiting[-1][0])):
+            print(str(visiting))
+            return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
+        for successor in problem.getSuccessors(visiting[-1][0]):
+            if not successor[0] in explored:
+                frontier.push(visiting + [successor])
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from game import Directions
+    dir_dict = {
+            'n' : Directions.NORTH,
+            'e' : Directions.EAST,
+            'w' : Directions.WEST,
+            's' : Directions.SOUTH
+            }
+    start = problem.getStartState()
+    frontier, explored = util.PriorityQueue(), []
+    frontier.push([(start,'start',0)],1) # start = (5,5) frontier = [[(5,5),'start',0]]
+    while(1):
+        visiting = frontier.pop()
+        explored.append(visiting[-1][0]) # the explore position
+        if(problem.isGoalState(visiting[-1][0])):
+            print(str(visiting))
+            return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
+        for successor in problem.getSuccessors(visiting[-1][0]):
+            if not successor[0] in explored:
+                frontier.push(visiting + [successor],visiting[-1][-1])
 
 def nullHeuristic(state, problem=None):
     """
