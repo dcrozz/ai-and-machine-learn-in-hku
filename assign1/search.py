@@ -81,13 +81,12 @@ def depthFirstSearch(problem):
             's' : Directions.SOUTH
             }
     start = problem.getStartState()
-    frontier, explored = util.Stack(), []
+    frontier, explored = util.Stack(), set()
     frontier.push([(start,'start',0)]) # start = (5,5) frontier = [[(5,5),'start',0]]
     while(1):
         visiting = frontier.pop()
-        explored.append(visiting[-1][0]) # the explore position
+        explored.add(visiting[-1][0]) # the explore position
         if(problem.isGoalState(visiting[-1][0])):
-            print(str(visiting))
             return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
         for successor in problem.getSuccessors(visiting[-1][0]):
             if not successor[0] in explored:
@@ -106,13 +105,12 @@ def breadthFirstSearch(problem):
             's' : Directions.SOUTH
             }
     start = problem.getStartState()
-    frontier, explored = util.Queue(), []
+    frontier, explored = util.Queue(), set()
     frontier.push([(start,'start',0)]) # start = (5,5) frontier = [[(5,5),'start',0]]
     while(1):
         visiting = frontier.pop()
-        explored.append(visiting[-1][0]) # the explore position
+        explored.add(visiting[-1][0]) # the explore position
         if(problem.isGoalState(visiting[-1][0])):
-            print(str(visiting))
             return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
         for successor in problem.getSuccessors(visiting[-1][0]):
             if not successor[0] in explored:
@@ -129,17 +127,18 @@ def uniformCostSearch(problem):
             's' : Directions.SOUTH
             }
     start = problem.getStartState()
-    frontier, explored = util.PriorityQueue(), []
-    frontier.push([(start,'start',0)],1) # start = (5,5) frontier = [[(5,5),'start',0]]
+    frontier, explored = util.PriorityQueue(), set()
+    frontier.push([(start,'start',0)],0) # start = (5,5) frontier = [[(5,5),'start',0]], assume the cost of start node is 0
     while(1):
         visiting = frontier.pop()
-        explored.append(visiting[-1][0]) # the explore position
+        explored.add(visiting[-1][0]) # the explore position
         if(problem.isGoalState(visiting[-1][0])):
-            print(str(visiting))
             return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
         for successor in problem.getSuccessors(visiting[-1][0]):
             if not successor[0] in explored:
-                frontier.push(visiting + [successor],visiting[-1][-1])
+                actions = [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]+[successor]] # the actions from start to newly added successor
+                frontier.push(visiting + [successor],problem.getCostOfActions(actions))
+                #  print('push the successor ',str(successor),', the cost is ', problem.getCostOfActions(actions))
 
 def nullHeuristic(state, problem=None):
     """
@@ -151,6 +150,25 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
     "*** YOUR CODE HERE ***"
+    from game import Directions
+    dir_dict = {
+            'n' : Directions.NORTH,
+            'e' : Directions.EAST,
+            'w' : Directions.WEST,
+            's' : Directions.SOUTH
+            }
+    start = problem.getStartState()
+    frontier, explored = util.PriorityQueue(), set()
+    frontier.push([(start,'start',0)],0) # start = (5,5) frontier = [[(5,5),'start',0]], assume the cost of start node is 0
+    while(1):
+        visiting = frontier.pop()
+        explored.add(visiting[-1][0]) # the explore position
+        if(problem.isGoalState(visiting[-1][0])):
+            return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
+        for successor in problem.getSuccessors(visiting[-1][0]):
+            if not successor[0] in explored:
+                actions = [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]+[successor]] # the actions from start to newly add successor
+                frontier.push(visiting + [successor],problem.getCostOfActions(actions) + heuristic(successor[0], problem)) #use cost + heuristic
     util.raiseNotDefined()
 
 # Abbreviations
