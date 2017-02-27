@@ -73,72 +73,57 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    from game import Directions
-    dir_dict = {
-            'n' : Directions.NORTH,
-            'e' : Directions.EAST,
-            'w' : Directions.WEST,
-            's' : Directions.SOUTH
-            }
+
     start = problem.getStartState()
     frontier, explored = util.Stack(), set()
-    frontier.push([(start,'start',0)]) # start = (5,5) frontier = [[(5,5),'start',0]]
-    while(1):
-        visiting = frontier.pop()
-        explored.add(visiting[-1][0]) # the explore position
-        if(problem.isGoalState(visiting[-1][0])):
-            return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
-        for successor in problem.getSuccessors(visiting[-1][0]):
-            if not successor[0] in explored:
-                frontier.push(visiting + [successor])
+    frontier.push((start,[],0)) # start = (5,5) frontier = [((5,5),[],0]])]
+
+    while not frontier.isEmpty():
+        curState, actions, cost = frontier.pop()
+        if curState in explored:
+            continue
+        explored.add(curState) # the explore position
+        if(problem.isGoalState(curState)):
+            return actions
+        for nextState, action, cost in problem.getSuccessors(curState):
+            if not nextState in explored:
+                frontier.push((nextState,actions+[action],cost))
 
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
     "*** YOUR CODE HERE ***"
-    from game import Directions
-    dir_dict = {
-            'n' : Directions.NORTH,
-            'e' : Directions.EAST,
-            'w' : Directions.WEST,
-            's' : Directions.SOUTH
-            }
     start = problem.getStartState()
     frontier, explored = util.Queue(), set()
-    frontier.push([(start,'start',0)]) # start = (5,5) frontier = [[(5,5),'start',0]]
-    while(1):
-        visiting = frontier.pop()
-        explored.add(visiting[-1][0]) # the explore position
-        if(problem.isGoalState(visiting[-1][0])):
-            return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
-        for successor in problem.getSuccessors(visiting[-1][0]):
-            if not successor[0] in explored:
-                frontier.push(visiting + [successor])
+    frontier.push((start,[],0)) # start = (5,5) frontier = [((5,5),[],0]])]
+    while not frontier.isEmpty():
+        curState, actions, cost = frontier.pop()
+        if curState in explored:
+            continue
+        explored.add(curState) # the explore position
+        if(problem.isGoalState(curState)):
+            return actions
+        for nextState, action, cost in problem.getSuccessors(curState):
+            if not nextState in explored:
+                frontier.push((nextState,actions+[action],cost))
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
-    from game import Directions
-    dir_dict = {
-            'n' : Directions.NORTH,
-            'e' : Directions.EAST,
-            'w' : Directions.WEST,
-            's' : Directions.SOUTH
-            }
     start = problem.getStartState()
     frontier, explored = util.PriorityQueue(), set()
-    frontier.push([(start,'start',0)],0) # start = (5,5) frontier = [[(5,5),'start',0]], assume the cost of start node is 0
-    while(1):
-        visiting = frontier.pop()
-        explored.add(visiting[-1][0]) # the explore position
-        if(problem.isGoalState(visiting[-1][0])):
-            return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
-        for successor in problem.getSuccessors(visiting[-1][0]):
-            if not successor[0] in explored:
-                actions = [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]+[successor]] # the actions from start to newly added successor
-                frontier.push(visiting + [successor],problem.getCostOfActions(actions))
-                #  print('push the successor ',str(successor),', the cost is ', problem.getCostOfActions(actions))
+    frontier.push((start,[],0),0) # start = (5,5) frontier = [[(5,5),'start',0]]
+    while not frontier.isEmpty():
+        curState, actions, cost = frontier.pop()
+        if curState in explored:
+            continue
+        explored.add(curState) # the explore position
+        if(problem.isGoalState(curState)):
+            return actions
+        for nextState, action, cost in problem.getSuccessors(curState):
+            if not nextState in explored:
+                frontier.push((nextState,actions+[action],cost),problem.getCostOfActions(actions))
 
 def nullHeuristic(state, problem=None):
     """
@@ -150,25 +135,19 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
     "*** YOUR CODE HERE ***"
-    from game import Directions
-    dir_dict = {
-            'n' : Directions.NORTH,
-            'e' : Directions.EAST,
-            'w' : Directions.WEST,
-            's' : Directions.SOUTH
-            }
     start = problem.getStartState()
     frontier, explored = util.PriorityQueue(), set()
-    frontier.push([(start,'start',0)],0) # start = (5,5) frontier = [[(5,5),'start',0]], assume the cost of start node is 0
-    while(1):
-        visiting = frontier.pop()
-        explored.add(visiting[-1][0]) # the explore position
-        if(problem.isGoalState(visiting[-1][0])):
-            return [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]] #ignore the start node
-        for successor in problem.getSuccessors(visiting[-1][0]):
-            if not successor[0] in explored:
-                actions = [ dir_dict[dirs[1][0].lower()] for dirs in visiting[1:]+[successor]] # the actions from start to newly add successor
-                frontier.push(visiting + [successor],problem.getCostOfActions(actions) + heuristic(successor[0], problem)) #use cost + heuristic
+    frontier.push((start,[],0),0) # start = (5,5) frontier = [[(5,5),'start',0]]
+    while not frontier.isEmpty():
+        curState, actions, cost = frontier.pop()
+        if curState in explored:
+            continue
+        explored.add(curState) # the explore position
+        if(problem.isGoalState(curState)):
+            return actions
+        for nextState, action, cost in problem.getSuccessors(curState):
+            if not nextState in explored:
+                frontier.push((nextState,actions+[action],cost),problem.getCostOfActions(actions)+heuristic(nextState, problem))
     util.raiseNotDefined()
 
 # Abbreviations

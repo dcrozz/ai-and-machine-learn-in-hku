@@ -307,8 +307,8 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
             if not hitsWall:
-                cornerstate = tuple([1 if x == state[0] else 0 for x in self.corners])
-                newcorn = tuple([ x or y for x,y in  zip(cornerstate,state[1])])
+                cornerstate = [1 if x == state[0] else 0 for x in self.corners]
+                newcorn = tuple([ x or y for x,y in zip(cornerstate, state[1])])
                 nextState = ((nextx, nexty) , newcorn)
                 cost = self.costFn(nextState[0])
                 successors.append((nextState, action, cost))
