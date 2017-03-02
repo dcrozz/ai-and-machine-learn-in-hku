@@ -347,7 +347,7 @@ def cornersHeuristic(state, problem):
 
     "*** YOUR CODE HERE ***"
     position, cornerstate = state
-    unvisitedCorners = [x and y for x,y in zip(cornerstate,corners)]
+    unvisitedCorners = [not bool(x) and y for x,y in zip(cornerstate,corners)]
     path = []
     wall_count = 0
     x_wall_count = 0
@@ -356,21 +356,34 @@ def cornersHeuristic(state, problem):
         if corner != 0:
             xy1 = position
             xy2 = corner
-            x_top = xy1[0] if xy1[0] > xy2[0] else xy2[0]
-            x_bottom = xy1[0] + xy2[0] - x_top
-            for x in range(x_bottom, x_top+1):
-                x_wall_count += walls[x][xy1[1]]
-            y_top = xy1[1] if xy1[1] > xy2[1] else xy2[1]
-            y_bottom = xy1[1] + xy2[1] - y_top
-            for y in range(y_bottom, y_top+1):
-                y_wall_count += walls[xy1[1]][y]
-            wall_count = x_wall_count if x_wall_count > y_wall_count else y_wall_count
-            path.append(abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1]) + wall_count)
+            #  x_top = xy1[0] if xy1[0] > xy2[0] else xy2[0]
+            #  x_bottom = xy1[0] + xy2[0] - x_top
+            #  for x in range(x_bottom, x_top+1):
+            #      x_wall_count += walls[x][xy1[1]]
+            #  y_top = xy1[1] if xy1[1] > xy2[1] else xy2[1]
+            #  y_bottom = xy1[1] + xy2[1] - y_top
+            #  for y in range(y_bottom, y_top+1):
+            #      y_wall_count += walls[xy1[1]][y]
+            #  wall_count = x_wall_count if x_wall_count > y_wall_count else y_wall_count
+            path.append(abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])) # + wall_count)
             
     if path ==[]:
         return 0
+    val = min(path)
+    height = corners[1][1] - corners[0][1]
+    width = corners[2][0] - corners[1][0]
+    if cornerstate == (1,1,1,1):
+        val += width + height*2
+    elif cornerstate == (1,0,0,1) or cornerstate == (0,1,1,0):
+        val += width
+    elif cornerstate == (1,1,0,0) or cornerstate == (0,0,1,1):
+        val += height
+    elif len(path) == 1:
+        pass
+    else:
+        val += width + height
 
-    return min(path)/len(path) # Default to trivial solution
+    return val # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
