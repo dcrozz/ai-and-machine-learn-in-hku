@@ -122,8 +122,9 @@ def uniformCostSearch(problem):
         if(problem.isGoalState(curState)):
             return actions
         for nextState, action, cost in problem.getSuccessors(curState):
-            if not nextState in explored:
-                frontier.push((nextState,actions+[action],cost),problem.getCostOfActions(actions))
+            #  if not nextState in explored:
+            frontier.push((nextState,actions+[action],cost),problem.getCostOfActions(actions+[action])) #push the cost from start to new node
+    return []
 
 def nullHeuristic(state, problem=None):
     """
@@ -147,7 +148,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             return actions
         for nextState, action, cost in problem.getSuccessors(curState):
             if not nextState in explored:
-                frontier.push((nextState,actions+[action],cost),problem.getCostOfActions(actions)+heuristic(nextState, problem))
+                frontier.push((nextState,actions+[action],cost),problem.getCostOfActions(actions+[action])+heuristic(nextState, problem))
     util.raiseNotDefined()
 
 # Abbreviations
