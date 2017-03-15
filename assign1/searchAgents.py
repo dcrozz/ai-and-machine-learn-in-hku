@@ -346,44 +346,24 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    position, cornerstate = state
-    unvisitedCorners = [not bool(x) and y for x,y in zip(cornerstate,corners)]
-    path = []
-    wall_count = 0
-    x_wall_count = 0
-    y_wall_count = 0
-    for corner in unvisitedCorners: #find the corn that have not visited yet
-        if corner != 0:
-            xy1 = position
-            xy2 = corner
-            #  x_top = xy1[0] if xy1[0] > xy2[0] else xy2[0]
-            #  x_bottom = xy1[0] + xy2[0] - x_top
-            #  for x in range(x_bottom, x_top+1):
-            #      x_wall_count += walls[x][xy1[1]]
-            #  y_top = xy1[1] if xy1[1] > xy2[1] else xy2[1]
-            #  y_bottom = xy1[1] + xy2[1] - y_top
-            #  for y in range(y_bottom, y_top+1):
-            #      y_wall_count += walls[xy1[1]][y]
-            #  wall_count = x_wall_count if x_wall_count > y_wall_count else y_wall_count
-            path.append(abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])) # + wall_count)
-            
-    if path ==[]:
-        return 0
-    val = min(path)
-    height = corners[1][1] - corners[0][1]
-    width = corners[2][0] - corners[1][0]
-    if cornerstate == (1,1,1,1):
-        val += width + height*2
-    elif cornerstate == (1,0,0,1) or cornerstate == (0,1,1,0):
-        val += width
-    elif cornerstate == (1,1,0,0) or cornerstate == (0,0,1,1):
-        val += height
-    elif len(path) == 1:
-        pass
-    else:
-        val += width + height
+    position, cornerState = state
+    unvisitedCorners = [y for x,y in zip(cornerState,corners) if x is 0]
+    total = 0
+    while len(unvisitedCorners) > 0:
+        path = []
+        for corner in unvisitedCorners: #find the corn that have not visited yet
+            if corner != 0:
+                xy1 = position
+                xy2 = corner
+                path.append(abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])) # + wall_count)
 
-    return val # Default to trivial solution
+        val = min(path)
+        position = unvisitedCorners[path.index(val)]
+        unvisitedCorners.remove(position)
+        total += val
+    
+
+    return total # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -474,7 +454,48 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+
+    foodList = foodGrid.asList()
+    unvisitedFood = foodList.copy()
+    maxdistance = 0
+    furPoint1 = (0,0)
+    furPoint2 = (0,0)
+    if len(unvisitedFood) > 1:
+        for point1 in unvisitedFood:
+            for point2 in unvisitedFood:
+                x1,y1 = point1
+                x2,y2 = point2
+                distance = abs(x1-x2) + abs(y1-y2)  # manhattan distance of every two point
+                if distance > maxdistance:
+                    maxdistance = distance
+                    furPoint1 = point1
+                    furPoint2 = point2
+        distancePoint1 = abs(position[0] - furPoint1[0]) + abs(position[1] - furPoint1[1])
+        distancePoint2 = abs(position[0] - furPoint2[0]) + abs(position[1] - furPoint2[1])
+        #  import pdb
+        #  pdb.set_trace()
+        return  (distancePoint1 if distancePoint1 < distancePoint2 else distancePoint2) + maxdistance
+    elif len(unvisitedFood) == 1:
+        return abs(position[0] - unvisitedFood[0][0]) + abs(position[1] - unvisitedFood[0][1])
+    else: 
+        return 0
+
+
+
+
+    #  total = 0
+    #  while len(unvisitedFood) > 0:
+    #      path = []
+    #      for food in unvisitedFood: #find the food that have not visited yet
+    #          xy1 = position
+    #          xy2 = food
+    #          path.append(abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1]))
+
+    #      val = min(path)
+    #      position = unvisitedFood[path.index(val)]
+    #      unvisitedFood.remove(position)
+    #      total += val
+    #  return 0
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
