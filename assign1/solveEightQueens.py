@@ -112,6 +112,40 @@ class Board:
         This function should return the number of attacks of the current board
         The datatype of the return value should be int
         """
+        from itertools import permutations
+        costLst = [[ 0 for i in range(8)] for j in range(8)]
+        tmpSquareArray = self.squareArray.copy()
+        for i in range(0,8):
+            for j in range(0,8):
+#need to improve
+                z = 0
+                queenPosition=[]
+                for z in range(0,8):
+                    if self.squareArray[i][z] == 1:
+                        tmpSquareArray[i][z] = 0
+                        tmpSquareArray[i][j] = 1
+
+                for x in range(0,8):
+                    for y in range(0,8):
+                        if tmpSquareArray[x][y]==1:
+                            queenPosition.append(y)
+##########
+
+                horzon_set = [ queenPosition.count(x) for x in set(queenPosition) ]
+                queens = [ (x,y) for x,y in enumerate(queenPosition)]
+                cross = {}
+                for q1, q2 in permutations(queens,2):
+                    if ( q1[0] -q2[0] == q1[1] - q2[1] ):
+                        if str(q1[0]-q2[0]) in cross:
+                            cross[str(q1[0] -q2[0])] +=1
+                        else:
+                            cross[str(q1[0] -q2[0])] = 1
+                costLst[i][j] = int(sum([ x*(x-1)/2 for x in horzon_set if x > 1 ]) + sum([x*(x-1)/2 for x in cross.values()])/2)
+
+
+                tmpSquareArray[i][j] = 0
+                tmpSquareArray[i][z] = 1
+        return 1
         util.raiseNotDefined()
 
 if __name__ == "__main__":
