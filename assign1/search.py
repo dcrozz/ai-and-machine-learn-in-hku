@@ -76,7 +76,7 @@ def depthFirstSearch(problem):
 
     start = problem.getStartState()
     frontier, explored = util.Stack(), set()
-    frontier.push((start,[],0)) # start = (5,5) frontier = [((5,5),[],0]])]
+    frontier.push((start,[],0)) # start = (5,5) frontier = [((5,5),[],0)]
 
     while not frontier.isEmpty():
         curState, actions, cost = frontier.pop()
@@ -86,8 +86,9 @@ def depthFirstSearch(problem):
         if(problem.isGoalState(curState)):
             return actions
         for nextState, action, cost in problem.getSuccessors(curState):
-            if not nextState in explored:
+            if not nextState in explored: #reduce the loop time
                 frontier.push((nextState,actions+[action],cost))
+    return []
 
 def breadthFirstSearch(problem):
     """
@@ -96,7 +97,7 @@ def breadthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
     start = problem.getStartState()
     frontier, explored = util.Queue(), set()
-    frontier.push((start,[],0)) # start = (5,5) frontier = [((5,5),[],0]])]
+    frontier.push((start,[],0)) # start = (5,5) frontier = [((5,5),[],0)]
     while not frontier.isEmpty():
         curState, actions, cost = frontier.pop()
         if curState in explored:
@@ -107,13 +108,14 @@ def breadthFirstSearch(problem):
         for nextState, action, cost in problem.getSuccessors(curState):
             if not nextState in explored:
                 frontier.push((nextState,actions+[action],cost))
+    return []
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
     start = problem.getStartState()
     frontier, explored = util.PriorityQueue(), set()
-    frontier.push((start,[],0),0) # start = (5,5) frontier = [[(5,5),'start',0]]
+    frontier.push((start,[],0),0) # start = (5,5) frontier = [((5,5),[],0],0)]
     while not frontier.isEmpty():
         curState, actions, cost = frontier.pop()
         if curState in explored:
@@ -122,8 +124,8 @@ def uniformCostSearch(problem):
         if(problem.isGoalState(curState)):
             return actions
         for nextState, action, cost in problem.getSuccessors(curState):
-            #  if not nextState in explored:
-            frontier.push((nextState,actions+[action],cost),problem.getCostOfActions(actions+[action])) #push the cost from start to new node
+            if not nextState in explored:
+                frontier.push((nextState,actions+[action],cost),problem.getCostOfActions(actions+[action])) #push the cost from start to new node
     return []
 
 def nullHeuristic(state, problem=None):
@@ -148,8 +150,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             return actions
         for nextState, action, cost in problem.getSuccessors(curState):
             if not nextState in explored:
-                frontier.push((nextState,actions+[action],cost),problem.getCostOfActions(actions+[action])+heuristic(nextState, problem))
-    util.raiseNotDefined()
+                frontier.push((nextState,actions+[action],cost),problem.getCostOfActions(actions+[action])\
+                        +heuristic(nextState, problem))
+    return []
 
 # Abbreviations
 bfs = breadthFirstSearch

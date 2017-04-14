@@ -472,30 +472,11 @@ def foodHeuristic(state, problem):
                     furPoint2 = point2
         distancePoint1 = abs(position[0] - furPoint1[0]) + abs(position[1] - furPoint1[1])
         distancePoint2 = abs(position[0] - furPoint2[0]) + abs(position[1] - furPoint2[1])
-        #  import pdb
-        #  pdb.set_trace()
         return  (distancePoint1 if distancePoint1 < distancePoint2 else distancePoint2) + maxdistance
     elif len(unvisitedFood) == 1:
         return abs(position[0] - unvisitedFood[0][0]) + abs(position[1] - unvisitedFood[0][1])
     else: 
         return 0
-
-
-
-
-    #  total = 0
-    #  while len(unvisitedFood) > 0:
-    #      path = []
-    #      for food in unvisitedFood: #find the food that have not visited yet
-    #          xy1 = position
-    #          xy2 = food
-    #          path.append(abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1]))
-
-    #      val = min(path)
-    #      position = unvisitedFood[path.index(val)]
-    #      unvisitedFood.remove(position)
-    #      total += val
-    #  return 0
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

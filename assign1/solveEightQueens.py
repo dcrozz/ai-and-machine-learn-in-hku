@@ -42,10 +42,13 @@ class SolveEightQueens:
                 print("# attacks: %s" % str(newBoard.getNumberOfAttacks()))
                 print(newBoard.getCostBoard().toString(True))
             currentNumberOfAttacks = newBoard.getNumberOfAttacks()
+            if currentNumberOfAttacks == 0:
+                break
+
             (newBoard, newNumberOfAttacks, newRow, newCol) = newBoard.getBetterBoard()
             i += 1
-            if currentNumberOfAttacks <= newNumberOfAttacks:
-                break
+            #  if currentNumberOfAttacks <= newNumberOfAttacks:
+            #      break
         return newBoard
 
 class Board:
@@ -146,8 +149,9 @@ class Board:
                     lcross[str(q1[0] +q2[0])] +=1
                 else:
                     lcross[str(q1[0] +q2[0])] = 1
-# mention that sum of coordinate will cause the value of same key count twice, the product of minus will cause keys with same absolute value
-        cost = int(sum([ x*(x-1)/2 for x in horzon_set if x > 1 ]) + sum([x for x in rcross.values()])/2+ sum([x/2 for x in lcross.values()]))
+        # mention that sum of coordinate will cause the value of same key count twice, the product of minus will cause keys with same absolute value
+        cost = int(sum([ x*(x-1)/2 for x in horzon_set if x > 1 ]) \
+                + sum([x for x in rcross.values()])/2+ sum([x/2 for x in lcross.values()]))
         return cost
         util.raiseNotDefined()
 
