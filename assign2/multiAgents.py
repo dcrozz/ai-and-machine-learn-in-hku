@@ -61,7 +61,21 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+
+        score = successorGameState.getScore()
+
+        WEIGHT_GHOST = 10.0
+        WEIGHT_FOOD = 10.0
+
+        disToFood = [manhattanDistance(newPos, x) for x in newFood.asList()]
+        if len(disToFood):
+            score += WEIGHT_FOOD / min(disToFood)
+
+        disToGhost = manhattanDistance(newPos, newGhostStates[0].getPosition())
+        if disToGhost > 0:
+            score -= WEIGHT_GHOST / disToGhost
+
+        return score 
         
 
 def scoreEvaluationFunction(currentGameState):
@@ -94,6 +108,12 @@ class MultiAgentSearchAgent(Agent):
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
 
+    def isTerminal(self, state, depth, agent):
+        return state.isWin() or state.isLose() or state.getLegalActions(agent) == [] or depth == self.depth
+
+    def isPacman(self, state, agent):
+        return agent % state.getNumAgents() == 0
+
 class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 2)
@@ -123,7 +143,23 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def minimax(state, depth, agent):
+            #when all the agent has moved, goto the next depth
+            if agent == state.getNumAgents(): 
+                return minimax(state, depth+1, 0)
+
+            if self.isTerminal(state, depth, agent):
+                return self.evaluationFunction(state)
+            #the minimax value of the next agent
+            successors = (
+                    minimax(state.generateSuccessor(agent, action), depth, agent + 1)
+                    for action in state.getLegalActions(agent)
+            )
+            return (max if self.isPacman(state, agent) else min)(successors)
+
+        return max(gameState.getLegalActions(0),
+              key = lambda x: minimax(gameState.generateSuccessor(0, x), 0, 1)
+        )
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
