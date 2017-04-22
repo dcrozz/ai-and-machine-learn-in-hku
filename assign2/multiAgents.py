@@ -173,7 +173,47 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        alpha = float("-inf")
+        beta = float("inf")
+ 
+        def maxValue(state, depth, agent=0, alpha=float("-inf"), beta=float("inf")):
+            if self.isTerminal(state, depth, 0):
+                return self.evaluationFunction(state)
+            v = float("-inf")
+            for action in state.getLegalActions(0):
+                v = max(v, minValue(state.generateSuccessor(0, action), 1, depth, alpha, beta))
+                if v > beta:
+                    return v
+                alpha = max(alpha, v)
+            return v  
+
+        def minValue(state, agent, depth, alpha=float("-inf"), beta=float("inf")):
+            if self.isTerminal(state, depth, agent):
+                return self.evaluationFunction(state)
+            v = float("inf")
+            if agent == gameState.getNumAgents() - 1:
+                for action in state.getLegalActions(agent):
+                    v = min(v, maxValue(state.generateSuccessor(agent, action), depth+1, agent,  alpha, beta))
+                    if v < alpha: return v
+                    beta = min(beta, v)
+                return v
+            else:
+                for action in state.getLegalActions(agent):
+                    v = min(v, minValue(state.generateSuccessor(agent, action), agent+1, depth, alpha, beta))
+                    if v < alpha: return v
+                    beta = min(beta, v)
+                return v
+        # Start with pacman: 
+        v = float("-inf")
+        for action in gameState.getLegalActions(0):
+            nextValue = minValue(gameState.generateSuccessor(0, action), 1, 0, alpha, beta)
+            if nextValue > v:
+                v = nextValue
+                nextAction = action
+            alpha = max(alpha, v)
+ 
+        return nextAction
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """

@@ -140,8 +140,172 @@ class TicTacToeAgent():
         {}
 
     def getAction(self, gameState, gameRules):
-        util.raiseNotDefined()
+        """return the action of max enval"""
 
+        return max(gameState.getLegalActions(gameRules),
+                   key = lambda x: self.envalFunc(gameState.generateSuccessor(x).boards, gameRules)
+                  )
+
+    def getWinBoard(self, board, gameRules):
+        """return the board which is set to win"""
+
+        if gameRules.deadTest(board):
+            return {'1':1}
+        cond_1 = [
+            [True, False, False, False, False, False, False, False, False],
+            [False, True, False, False, False, False, False, False, False],
+            [True, True, True, True, False, False, False, False, False],
+            [True, True, True, False, True, False, False, False, False],
+            [True, True, True, False, False, False, False, False, False],
+            [True, False, False, False, True, False, False, False, True],
+            [True, False, False, False, False, True, False, True, False],
+            [True, True, True, False, False, False, True, False, False],
+            [True, True, True, False, False, False, False, True, False],
+            [False, True, False, False, True, False, False, True, False],
+            [True, True, False, False, True, False, False, True, False],
+            [True, True, False, False, True, False, False, False, True],
+            [True, False, True, False, True, False, True, False, False]]
+        cond_a = [
+            [True, False, False, False, False, False, False, False, True],
+            [False, True, False, True, False, False, False, False , False],
+            [False, True, False, False, False, False, False, True , False],
+            [True, True, False, False, False, False, True, False, False],
+            [True, False, True, False, True, False, False, False, False],
+            [True, False, True, False, False, False, False, True, False],
+            [True, False, False, False, True, True, False, False, False],
+            [True, True, False, True, True, False, False, False, False],
+            [True, True, False, True, False, True, False, False, False],
+            [True, True, False, True, False, False, False, False, True],
+            [True, True, False, False, False, False, False, True, True],
+            [True, False, True, False, False, False, True, False, True],
+            [False, True, False, True, False, True, False, True, False],
+            [True, True, False, False, True, True, True, False, False],
+            [True, True, False, False, False, True, True, True, False],
+            [True, True, False, False, False, True, True, False, True],
+            [True, True, False, True, False, True, False, True, True]]
+        cond_b = [
+            [True, False, True, False, False, False, False, False, False],
+            [True, False, False, False, True, False, False, False, False],
+            [True, False, False, False, False, True, False, False, False],
+            [False, True, False, False, True, False, False, False, False],
+            [True, True, False, True, False, False, False, False, False],
+            [False, True, False, True, False, True, False, False, False],
+            [True, True, False, False, True, True, False, False, False],
+            [True, True, False, False, True, False, True, False, False],
+            [True, True, False, False, False, True, True, False, False],
+            [True, True, False, False, False, False, True, True, False],
+            [True, True, False, False, False, False, True, False, True],
+            [True, False, True, False, True, False, False, True, False],
+            [True, False, False, False, True, True, False, True, False],
+            [True, True, False, True, False, True, False, True, False],
+            [True, True, False, True, False, True, False, False, True]]
+        cond_c = [[False, False, False, False, False, False, False, False, False]]
+        cond_d = [
+            [True, True, False, False, False, True, False, False, False],
+            [True, True, False, False, False, False, False, True, False],
+            [True, True, False, False, False, False, False, False, True]]
+        cond_ab = [
+            [True, True, False, False, True, False, False, False, False],
+            [True, False, True, False, False, False, True, False, False],
+            [False, True, False, True, True, False, False, False, False],
+            [True, True, False, False, False, True, False, True, False],
+            [True, True, False, False, False, True, False, False, True]]
+        cond_ad = [[True, True, False, False, False, False, False, False, False]]
+        cond_c2 = [[False, False, False, False, True, False, False, False, False]]
+        all_cond = cond_1 + cond_a + cond_b + cond_c + cond_d + cond_ab + cond_ad + cond_c2
+        rotate_board = self.rotateBoard(board)
+        reflec_board = self.reflectBoard(board)
+        #classify boards to condition
+        trans_board = [board for board in rotate_board+reflec_board if board in all_cond]
+        if trans_board[0] in cond_1:
+            return {'1':1}
+        elif trans_board[0] in cond_a:
+            return {'a':1}
+        elif trans_board[0] in cond_b:
+            return {'b':1}
+        elif trans_board[0] in cond_c:
+            return {'c':1}
+        elif trans_board[0] in cond_d:
+            return {'d':1}
+        elif trans_board[0] in cond_ab:
+            return {'a':1, 'b':1}
+        elif trans_board[0] in cond_ad:
+            return {'a':1, 'b':1}
+        elif trans_board[0] in cond_c2:
+            return {'c':2}
+        else:
+            return False
+
+    def rotateBoard(self, board):
+        """rotate the board with 90, 180, 270 degree"""
+
+        boards = [board]
+        tmp = list(board)
+        for i in range(3):
+            newboard = list(board)
+            newboard[0] = tmp[6]
+            newboard[1] = tmp[3]
+            newboard[2] = tmp[0]
+            newboard[3] = tmp[7]
+            newboard[5] = tmp[1]
+            newboard[6] = tmp[8]
+            newboard[7] = tmp[5]
+            newboard[8] = tmp[2]
+            tmp = list(newboard)
+            boards.append(newboard)
+        return boards
+
+    def reflectBoard(self, board):
+        """reflect the board horizonally, vertically, and diagonally"""
+
+        boards = []
+        newboard = list(board)
+        newboard[0] = board[6]
+        newboard[1] = board[7]
+        newboard[2] = board[8]
+        newboard[6] = board[0]
+        newboard[7] = board[1]
+        newboard[8] = board[2]
+        boards.append(newboard)
+        newboard = list(board)
+        newboard[0] = board[2]
+        newboard[2] = board[0]
+        newboard[3] = board[5]
+        newboard[5] = board[3]
+        newboard[6] = board[8]
+        newboard[8] = board[6]
+        boards.append(newboard)
+        newboard = list(board)
+        newboard[1] = board[3]
+        newboard[3] = board[1]
+        newboard[5] = board[7]
+        newboard[7] = board[5]
+        newboard[2] = board[6]
+        newboard[6] = board[2]
+        boards.append(newboard)
+        newboard = list(board)
+        newboard[0] = board[8]
+        newboard[8] = board[0]
+        newboard[1] = board[5]
+        newboard[5] = board[1]
+        newboard[3] = board[7]
+        newboard[7] = board[3]
+        boards.append(newboard)
+        return boards
+
+    def envalFunc(self, board, gameRules):
+        """envaluate function of this game"""
+
+        win_cond = [{'a':1}, {'b':2}, {'c':2}, {'b':1, 'c':1}]
+        results = [self.getWinBoard(board[i], gameRules) for i in range(3)]
+        #calcaluate the score and find if it is in win_cond
+        from collections import Counter
+        from functools import reduce
+        #counter is the subclass of dict
+        score = reduce(lambda x, y: x+y, map(Counter, results))
+        new_score = {key: score[key] for key in score if key != '1'}
+
+        return 1 if new_score in win_cond else 0
 
 class randomAgent():
     """
